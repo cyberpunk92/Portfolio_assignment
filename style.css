@@ -1,0 +1,1039 @@
+/* ==================================================================
+   Mohsin Ali | Portfolio  -  style.css  (EXTERNAL STYLE SHEET)
+   Web Engineering Lab 03: Cascading Style Sheets
+   Linked from index.html with: <link rel="stylesheet" href="style.css">
+
+   LAB TASK CHECKLIST (search this file for "LAB TASK")
+   1. Page heading in Times New Roman, 24px ......... .hero h1
+   2. Light blue left cells in education table ...... .edu-table tbody th
+   3. CSS variables ................................. :root + local variable on skill cards
+   4. Picture as background image, top right ........ .hero-photo
+   5. Pseudo-classes on links (About, Contact...) ... .nav-links a, .sidebar a, .contact-list a
+   6. Student skill card ............................ #student-skill-card, .skill-card
+
+   OTHER LAB MANUAL TOPICS (search for "LAB:")
+   inline / internal / external CSS, universal, element, class, id and
+   group selectors, background properties, CSS units (px % em rem vw vh),
+   local variables, anchor / user-action / UI-state pseudo-classes,
+   box model + box-sizing, borders (style, width, colour, sides, shorthand,
+   radius with 1, 2, 4 values and h/v), padding and margin shorthand,
+   descendant / adjacent / general sibling combinators, all 7 attribute
+   selectors, styling forms with attribute selectors, text-shadow + glow,
+   text properties.
+   ================================================================== */
+
+
+/* ------------------------------------------------------------------
+   LAB TASK 3: CSS VARIABLES (global)
+   Declared on :root, so every rule in the page can use var(--name).
+   ------------------------------------------------------------------ */
+:root {
+    --ink: #0E1A2B;              /* page background */
+    --surface: #142338;          /* cards, table */
+    --surface-raised: #1A2D47;   /* cards inside cards */
+    --line: rgba(173, 216, 230, 0.16);
+    --text: #E3ECF4;
+    --muted: #93A7BC;
+    --light-blue: lightblue;     /* #ADD8E6 - the lab colour, used as the main accent */
+    --lilac: #B9B4F5;            /* visited links */
+    --butter: #F6D77A;           /* active links, "Ongoing" */
+    --java: #F2B84B;
+    --seo: #7FD8B2;
+    --comm: #F2A7C4;
+    --ai: #ADD8E6;
+    --serif: "Times New Roman", Times, serif;
+    --sans: "Manrope", "Segoe UI", Arial, sans-serif;
+    --radius: 16px;
+}
+
+
+/* LAB: universal selector + box-sizing.
+   border-box keeps padding and border INSIDE the width you set,
+   so width: 200px really means 200px on screen. */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;             /* LAB: units - 1rem = 16px */
+    scroll-behavior: smooth;
+}
+
+/* LAB: element selector + background properties */
+body {
+    font-family: var(--sans);
+    color: var(--text);
+    line-height: 1.6;
+    background-color: var(--ink);
+    background-image: radial-gradient(circle at 88% 10%, rgba(173, 216, 230, 0.10), transparent 40%);
+    background-repeat: no-repeat;
+}
+
+/* LAB: group selector - one rule for several elements */
+h2, h3, h4 {
+    color: var(--text);
+    line-height: 1.25;
+}
+
+a {
+    color: var(--light-blue);
+}
+
+
+/* ==================================================================
+   NAVIGATION
+   ================================================================== */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 6vw;           /* LAB: padding shorthand (2 values) + vw unit */
+    background-color: rgba(14, 26, 43, 0.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+}
+
+.brand {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-style: italic;
+    color: var(--light-blue);
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 28px;
+}
+
+/* LAB: descendant selector - every <a> anywhere inside .nav-links */
+.nav-links a {
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* ------------------------------------------------------------------
+   LAB TASK 5: PSEUDO-CLASSES ON LINKS
+   Order matters: :link, :visited, :hover, :active (LVHA)
+   ------------------------------------------------------------------ */
+.nav-links a:link {
+    color: var(--muted);
+}
+
+.nav-links a:visited {
+    color: var(--lilac);
+}
+
+.nav-links a:hover {
+    color: var(--light-blue);
+    /* LAB: text-decoration shorthand: line + style + colour + thickness */
+    text-decoration: underline wavy var(--light-blue) 1px;
+    text-underline-offset: 6px;
+}
+
+.nav-links a:active {
+    color: var(--butter);
+}
+
+.nav-links a:focus-visible {
+    outline: 2px solid var(--light-blue);
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+
+.menu-btn {
+    display: none;
+    background-color: transparent;
+    border: 1px solid var(--line);
+    color: var(--light-blue);
+    font-size: 1.3rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.menu-btn:hover {
+    background-color: var(--surface);
+}
+
+/* Sidebar (opened by the menu button on small screens) */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 300px;
+    height: 100vh;               /* LAB: units - vh (full screen height) */
+    background-color: var(--surface);
+    border-left: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    z-index: 100;
+    visibility: hidden;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.4);
+    transition: right 0.35s ease, visibility 0.35s;
+}
+
+.sidebar.active {
+    right: 0;
+    visibility: visible;
+}
+
+.sidebar h2 {
+    font-family: var(--serif);
+    font-weight: normal;
+    font-size: 1.6rem;
+    color: var(--light-blue);
+    margin-bottom: 28px;
+}
+
+.sidebar ul {
+    list-style: none;
+    text-align: center;
+}
+
+.sidebar li {
+    margin: 18px 0;
+}
+
+.sidebar a {
+    font-size: 1.15rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* LAB TASK 5 (sidebar links): :link, :visited, :hover, :active */
+.sidebar a:link    { color: var(--muted); }
+.sidebar a:visited { color: var(--lilac); }
+.sidebar a:hover   { color: var(--light-blue); text-shadow: 0 0 10px rgba(173, 216, 230, 0.6); }
+.sidebar a:active  { color: var(--butter); }
+
+.close-btn {
+    position: absolute;
+    top: 16px;
+    right: 22px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+
+/* ==================================================================
+   LAYOUT
+   ================================================================== */
+.main-content {
+    max-width: 1120px;
+    margin: 0 auto;              /* LAB: margin shorthand - centres the page */
+    padding: 0 6vw;
+}
+
+
+/* ==================================================================
+   HERO
+   ================================================================== */
+.hero {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    column-gap: 48px;
+    align-items: start;
+    min-height: 70vh;            /* LAB: units - vh */
+    padding: 88px 0 72px;        /* LAB: padding shorthand (3 values) */
+    border-bottom: 1px solid var(--line);
+}
+
+/* ------------------------------------------------------------------
+   LAB TASK 1: PAGE HEADING - Times New Roman, 24px
+   LAB: text-shadow glow effect (0 0 blur colour)
+   ------------------------------------------------------------------ */
+.hero h1 {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 24px;
+    color: var(--light-blue);
+    letter-spacing: 2px;
+    text-shadow: 0px 0px 12px rgba(173, 216, 230, 0.6);
+    margin-bottom: 20px;
+}
+
+.hero-title {
+    font-family: var(--serif);
+    font-size: clamp(2.4rem, 5.5vw, 4.25rem);   /* LAB: units - rem + vw */
+    line-height: 1.05;
+    color: var(--text);
+    max-width: 17ch;
+    margin-bottom: 24px;
+}
+
+.hero-lede {
+    color: var(--muted);
+    font-size: 1.1rem;
+    max-width: 46ch;
+    margin-bottom: 32px;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* ------------------------------------------------------------------
+   LAB TASK 4: PICTURE AS BACKGROUND IMAGE, TOP RIGHT OF THE PAGE
+   Put Profile_Picture.jpg in the same folder as index.html.
+   The gradient after it shows only if the photo is missing.
+   ------------------------------------------------------------------ */
+.hero-photo {
+    position: relative;
+    justify-self: end;
+    width: 260px;
+    height: 300px;
+    background-image: url("Profile_Picture.jpg"), linear-gradient(160deg, var(--surface-raised), var(--surface));
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: cover;
+    /* LAB: border-radius with horizontal / vertical radii (oval corners) */
+    border-radius: 58% 42% 46% 54% / 46% 52% 48% 54%;
+    box-shadow: 0 0 0 8px rgba(173, 216, 230, 0.08);
+}
+
+.hero-photo::before {
+    content: "";
+    position: absolute;
+    inset: -14px;
+    border: 1px dashed var(--light-blue);     /* LAB: border-style dashed */
+    border-radius: inherit;
+    opacity: 0.5;
+}
+
+
+/* ==================================================================
+   BUTTONS
+   ================================================================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border: 1px solid var(--light-blue);       /* LAB: border shorthand (width style colour) */
+    border-radius: 10px;
+    background-color: var(--light-blue);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn:hover {
+    background-color: transparent;
+    color: var(--light-blue);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--light-blue);
+}
+
+.btn-outline:hover {
+    background-color: rgba(173, 216, 230, 0.1);
+}
+
+
+/* ==================================================================
+   SECTIONS (title on the left, content on the right)
+   ================================================================== */
+.section {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 40px;
+    padding: 88px 0;
+    border-bottom: 1px solid var(--line);
+    scroll-margin-top: 64px;
+}
+
+.section-title {
+    position: sticky;
+    top: 96px;
+    align-self: start;
+    font-family: var(--serif);
+    font-size: 2.1rem;
+    font-weight: normal;
+}
+
+/* lets wide content (the table) scroll inside its box instead of widening the page */
+.section-body {
+    min-width: 0;
+}
+
+.sub-title {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    font-weight: normal;
+    margin-bottom: 16px;
+}
+
+
+/* ==================================================================
+   ABOUT
+   LAB: text properties - text-align, text-indent, word-spacing, line-height
+   ================================================================== */
+.about-text {
+    font-size: 1.1rem;
+    text-align: justify;
+    text-indent: 2em;            /* LAB: units - em (relative to font size) */
+    word-spacing: 1px;
+    line-height: 1.8;
+    max-width: 62ch;
+    margin-bottom: 44px;
+}
+
+.about-text strong {
+    color: var(--light-blue);
+}
+
+.bar {
+    margin-bottom: 18px;
+}
+
+.bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+}
+
+.bar-track {
+    height: 8px;
+    background-color: var(--surface-raised);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background-color: var(--light-blue);
+    border-radius: 999px;
+}
+
+/* LAB: units - % is relative to the parent's width */
+.level-95 { width: 95%; }
+.level-90 { width: 90%; }
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: 40px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+.stat-box {
+    padding: 22px 8px;
+    text-align: center;
+    border-left: 1px solid var(--line);        /* LAB: border on one side only */
+}
+
+.stat-box:first-child {
+    border-left: none;
+}
+
+.stat-box .number {
+    display: block;
+    font-family: var(--serif);
+    font-size: 2.2rem;
+    line-height: 1.1;
+    color: var(--light-blue);
+}
+
+.stat-box .label {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+
+/* ==================================================================
+   LAB TASK 6: STUDENT SKILL CARD
+   i.   Class selector  -> .skill-card (shared style for all 4 cards)
+   ii.  ID selector     -> #student-skill-card, #java-skills, #seo-skills ...
+   iii. Border radius   -> 24px outer card, 16px inner cards
+   iv.  Background color
+   v.   Hover effect    -> .skill-card:hover
+   ================================================================== */
+#student-skill-card {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 32px;
+}
+
+.student-card-head {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+    border-bottom: 1px dotted var(--muted);    /* LAB: border-style dotted */
+}
+
+/* LAB: border-color with 4 values (top right bottom left),
+   one colour for each skill card below */
+.avatar-ring {
+    display: inline-flex;
+    padding: 4px;
+    border-style: solid;
+    border-width: 3px;
+    border-color: var(--java) var(--seo) var(--comm) var(--ai);
+    border-radius: 50%;
+}
+
+.avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--surface-raised);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    color: var(--light-blue);
+}
+
+.student-card-head h3 {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: normal;
+}
+
+.student-card-head p {
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.skill-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+/* i. CLASS selector: shared by all four skill cards */
+.skill-card {
+    --card-accent: var(--light-blue);          /* LAB: local CSS variable */
+    background-color: var(--surface-raised);   /* iv. background colour */
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--card-accent); /* LAB: border on one side */
+    border-radius: var(--radius);              /* iii. border radius */
+    padding: 22px 22px 24px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+/* ii. ID selectors: each card sets its own local --card-accent */
+#java-skills          { --card-accent: var(--java); }
+#seo-skills           { --card-accent: var(--seo); }
+#communication-skills { --card-accent: var(--comm); }
+#ai-skills            { --card-accent: var(--ai); }
+
+/* v. HOVER effect: the card lifts and glows in its own colour */
+.skill-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--card-accent);
+    box-shadow: 0 14px 32px -14px var(--card-accent);
+}
+
+.skill-icon {
+    font-size: 1.4rem;
+    color: var(--card-accent);
+    margin-bottom: 10px;
+}
+
+.skill-card h4 {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    font-weight: normal;
+    margin-bottom: 4px;
+}
+
+.skill-card > p {
+    color: var(--muted);
+    font-size: 0.92rem;
+    margin-bottom: 16px;
+}
+
+.skill-tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.skill-tags li {
+    padding: 0.35em 0.8em;       /* LAB: units - em */
+    font-size: 0.82rem;
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--line);
+    border-radius: 10px 3px;     /* LAB: border-radius with 2 values */
+}
+
+/* LAB: attribute spaced selector (~=): strongest skill gets a star */
+.skill-tags li[data-level~="core"]::before {
+    content: "\2605  ";
+    color: var(--card-accent);
+}
+
+/* LAB: text-transform (written lowercase in the HTML) */
+#communication-skills .skill-tags li {
+    text-transform: capitalize;
+}
+
+/* LAB: attribute hyphenated selector (|=): spoken languages */
+.skill-tags li[lang|="en"],
+.skill-tags li[lang|="ur"] {
+    border-style: dashed;
+    border-color: var(--card-accent);
+}
+
+
+/* ==================================================================
+   LAB TASK 2: EDUCATION TABLE - light blue left-side cells
+   ================================================================== */
+.table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.edu-table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    background-color: var(--surface);
+}
+
+.edu-table th,
+.edu-table td {
+    padding: 16px 20px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--line);
+}
+
+.edu-table thead th {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--muted);
+    background-color: var(--surface-raised);
+}
+
+/* the light blue left cells: Matriculation, FSc, BS */
+.edu-table tbody th {
+    background-color: var(--light-blue);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 1.1rem;
+}
+
+.edu-table tbody tr:last-child th,
+.edu-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.grade {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px 4px 12px 4px;   /* LAB: border-radius with 4 values */
+    background-color: rgba(173, 216, 230, 0.14);
+    color: var(--light-blue);
+    font-weight: 700;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.status-ongoing {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--butter);
+    font-weight: 600;
+}
+
+.status-ongoing::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--butter);
+    box-shadow: 0 0 0 4px rgba(246, 215, 122, 0.18);
+}
+
+
+/* ==================================================================
+   CERTIFICATES
+   ================================================================== */
+.cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.cert {
+    padding: 22px;
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.cert h4 {
+    font-size: 1.05rem;
+    margin-bottom: 6px;
+}
+
+/* LAB: general sibling combinator (~): any <p> after the <h4> in a card */
+.cert h4 ~ p {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.cert-award {
+    grid-column: 1 / -1;
+    border-style: dashed;        /* LAB: border-style dashed */
+    border-color: var(--butter);
+}
+
+.cert-award h4 {
+    color: var(--butter);
+}
+
+
+/* ==================================================================
+   CONTACT
+   ================================================================== */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 40px;
+}
+
+.contact-intro {
+    color: var(--muted);
+    margin-bottom: 20px;
+    max-width: 36ch;
+}
+
+.contact-list {
+    list-style: none;
+}
+
+.contact-list li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.contact-list i {
+    width: 20px;
+    text-align: center;
+    color: var(--light-blue);
+}
+
+/* LAB TASK 5 (contact links): :link, :visited, :hover, :active */
+.contact-list a:link,
+.contact-list a:visited {
+    color: var(--text);
+    text-decoration: none;
+}
+
+.contact-list a:hover {
+    color: var(--light-blue);
+    text-decoration: underline;
+}
+
+.contact-list a:active {
+    color: var(--butter);
+}
+
+/* LAB: attribute present selector: links that open a new tab get an arrow */
+.contact-list a[target]::after {
+    content: " \2197";
+    color: var(--muted);
+}
+
+/* LAB: attribute begins-with (^=) and ends-with ($=) selectors */
+.contact-list a[href^="mailto:"] {
+    font-weight: 600;
+}
+
+.contact-list a[href$="gmail.com"]:hover {
+    text-decoration-color: var(--comm);
+}
+
+/* ---------- Form ---------- */
+.contact-form {
+    display: grid;
+    gap: 16px;
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.field label,
+.purpose legend {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+/* LAB: styling forms with attribute selectors (no class or id needed) */
+input[type="text"],
+input[type="email"],
+textarea {
+    width: 100%;
+    padding: 13px 15px;
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+}
+
+/* LAB: attribute present selector */
+textarea[rows] {
+    resize: vertical;
+}
+
+/* LAB: UI-state pseudo-classes :enabled / :disabled */
+input[type="text"]:enabled,
+input[type="email"]:enabled,
+textarea:enabled {
+    background-color: var(--surface);
+}
+
+input[type="text"]:disabled {
+    background-color: transparent;
+    color: var(--muted);
+    border-style: dashed;
+    cursor: not-allowed;
+}
+
+/* LAB: :required - a light blue bar on the left of required fields */
+input:required,
+textarea:required {
+    border-left: 3px solid var(--light-blue);
+}
+
+/* LAB: user-action pseudo-class :focus */
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--light-blue);
+    box-shadow: 0 0 0 3px rgba(173, 216, 230, 0.2);
+}
+
+/* LAB: :valid / :invalid - only after the visitor has typed something */
+input:not(:placeholder-shown):valid,
+textarea:not(:placeholder-shown):valid {
+    border-color: var(--seo);
+}
+
+input:not(:placeholder-shown):invalid {
+    border-color: #F28B82;
+}
+
+/* Radio buttons shown as pills */
+.purpose {
+    border: none;
+}
+
+.purpose-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.purpose input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.purpose label {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.purpose label:hover {
+    border-color: var(--light-blue);
+}
+
+/* LAB: :checked + adjacent sibling combinator (+):
+   the <label> right after a checked radio is highlighted */
+.purpose input[type="radio"]:checked + label {
+    background-color: var(--light-blue);
+    border-color: var(--light-blue);
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.purpose input[type="radio"]:focus-visible + label {
+    outline: 2px solid var(--light-blue);
+    outline-offset: 2px;
+}
+
+.contact-form .btn {
+    justify-self: start;
+}
+
+
+/* ==================================================================
+   FOOTER
+   ================================================================== */
+footer {
+    padding: 48px 0 56px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.social {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    font-size: 1.4rem;
+    margin-bottom: 14px;
+}
+
+.social a {
+    color: var(--muted);
+    transition: color 0.2s;
+}
+
+/* LAB: attribute contains (*=) and begins-with (^=) selectors */
+.social a[href*="github"]:hover   { color: var(--text); }
+.social a[href*="kaggle"]:hover   { color: #20BEFF; }
+.social a[href^="mailto:"]:hover  { color: var(--comm); }
+
+/* LAB: priority - the internal <style> in index.html overrides this */
+.footer-note {
+    font-style: normal;
+    font-size: 0.9rem;
+}
+
+
+/* ==================================================================
+   SMALL SCREENS
+   ================================================================== */
+@media (max-width: 820px) {
+    .nav-links {
+        display: none;
+    }
+
+    .menu-btn {
+        display: inline-flex;
+    }
+
+    /* the photo stays top-right, beside the name */
+    .hero {
+        grid-template-columns: 1fr 120px;
+        column-gap: 20px;
+        min-height: auto;
+        padding: 48px 0 56px;
+    }
+
+    .hero-text {
+        display: contents;
+    }
+
+    .hero h1,
+    .hero-title {
+        grid-column: 1;
+    }
+
+    .hero-lede,
+    .hero-actions {
+        grid-column: 1 / -1;
+    }
+
+    .hero-photo {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        width: 120px;
+        height: 140px;
+    }
+
+    .hero-photo::before {
+        inset: -8px;
+    }
+
+    .hero-title {
+        font-size: 2.3rem;
+    }
+
+    .section {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 56px 0;
+    }
+
+    .section-title {
+        position: static;
+    }
+
+    .skill-grid,
+    .contact-grid,
+    .field-row {
+        grid-template-columns: 1fr;
+    }
+
+    #student-skill-card {
+        padding: 20px;
+    }
+
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-box:nth-child(3) {
+        border-left: none;
+    }
+
+    .stat-box:nth-child(n + 3) {
+        border-top: 1px solid var(--line);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    * {
+        transition: none !important;
+    }
+}
